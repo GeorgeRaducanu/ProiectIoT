@@ -8,7 +8,8 @@
 Pentru o implementare ușoară, am decis utilizarea limbajului
 MicroPython.
 
-IDE-ul utilizat este Thonny.
+IDE-ul utilizat este Thonny, intrucat ofera suport usor de lucru cu ESP32 
+si exista multe instructiuni referitoare la setup.
 
 ## Componente necesare:
 
