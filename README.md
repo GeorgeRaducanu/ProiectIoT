@@ -4,6 +4,12 @@
 
 ## Descrierea proiectului:
 
+## Detalii implementare software
+Pentru o implementare ușoară, am decis utilizarea limbajului
+MicroPython.
+
+IDE-ul utilizat este Thonny.
+
 ## Componente necesare:
 
 * Placa (placi) de tip ESP32-WROOM
