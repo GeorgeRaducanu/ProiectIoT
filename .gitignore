@@ -1,0 +1,5 @@
+# For sqlite
+*.db
+
+# For vscode
+.vscode/
