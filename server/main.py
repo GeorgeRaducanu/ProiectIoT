@@ -56,6 +56,19 @@ def show_entries():
     entries = get_entries_from_db()
     return jsonify(entries)
 
+@app.route('/dataVisualization')
+def dataVisualization():
+    return render_template('dataVisualization.html')
+
+@app.route('/turnFanOn')
+def turnFanOn():
+    return render_template('turnFanOn.html')
+
+@app.route('/turnFanOff')
+def turnFanOff():
+    return render_template('turnFanOff.html')
+
+
 @app.route('/')
 def index():
     return render_template('index.html')

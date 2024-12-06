@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <title>George's IoT</title>
     <h1>Bun venit în rețeaua IoT pentru temperatură și umiditate!</h1>
+
+    <ul>
+        <li><a href="{{ url_for('dataVisualization') }}">Vizualizare grafice</a></li>
+        <li><a href="{{ url_for('turnFanOn') }}">Pornire ventilator</a></li>
+        <li><a href="{{ url_for('turnFanOff') }}">Oprire ventilator</a></li>
+    </ul>
 </head>
 <body>
 
