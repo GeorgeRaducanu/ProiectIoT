@@ -1,3 +1,4 @@
+import random
 from flask import Flask, render_template, request, g, jsonify
 import sqlite3
 
@@ -68,6 +69,24 @@ def turnFanOn():
 def turnFanOff():
     return render_template('turnFanOff.html')
 
+@app.route('/data')
+def get_data():
+    # Get the data from the database
+    entries = get_entries_from_db()
+    # In the format of 
+    '''
+     data = {
+        "timestamps": [],
+        "temperature": [],
+        "humidity": [],
+    }'''
+    data = {'timestamps': [], 'temperature': [], 'humidity': []}
+    for (_, timestamp, temperature, humidity) in entries:
+        data['timestamps'].append(timestamp)
+        data['temperature'].append(temperature)
+        data['humidity'].append(humidity)
+    return jsonify(data)
+        
 
 @app.route('/')
 def index():
@@ -77,8 +96,8 @@ if __name__ == '__main__':
     init_db()
 
     # Insert into the database
-    add_entry_to_db(20.0, 50.0)
-
+    for i in range(20):
+        add_entry_to_db(random.randint(20, 30), random.randint(40, 60))
     # Show all entries in the database
     print(get_entries_from_db())
 
