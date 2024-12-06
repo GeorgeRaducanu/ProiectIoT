@@ -27,4 +27,15 @@ Cu ajutorul MicroPython, se ia temperatura si umiditatea de la senzorul DHT11.
 
 ## Arhitectura:
 
+## Folosire & Rulare:
+
+Se va urca codul Micropython (fisierul main_esp32.py) pe placa cu ajutorul unui 
+IDE specializat sau din command-line. Se recomanda utilizarea IDE-ului Thonny pentru 
+lucru usor si rapid.
+
+Pentru rularea serverului se utilizează python. Este necesara o instalare locala de python cu Flask, 
+fie nativ, fie cu un mediu virtual.
+
+python main.py
+
 ## Resurse & Bibliografie:
