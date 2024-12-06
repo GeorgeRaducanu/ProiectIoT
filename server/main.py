@@ -62,4 +62,11 @@ def index():
 
 if __name__ == '__main__':
     init_db()
+
+    # Insert into the database
+    add_entry_to_db(20.0, 50.0)
+
+    # Show all entries in the database
+    print(get_entries_from_db())
+
     app.run(debug=True)
