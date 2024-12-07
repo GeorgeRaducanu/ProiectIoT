@@ -101,4 +101,4 @@ if __name__ == '__main__':
     # Show all entries in the database
     print(get_entries_from_db())
 
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5001, ssl_context=('cert.pem', 'key.pem'), debug=True)
