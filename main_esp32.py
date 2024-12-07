@@ -3,15 +3,48 @@ import machine
 import time
 import network
 import urequests
-import ussl
 import socket
 import json
-DHT_PIN = 4  # Pinul pentru senzor
+DHT_PIN = 32  # Pinul pentru senzor
 
 dht_sensor = dht.DHT11(machine.Pin(DHT_PIN))
 
-ssid = "Numele retelei"
-password = "Parola retelei"
+ssid = "Georgeeee"
+password = "zsaq7163"
+
+sta_if = network.WLAN(network.STA_IF)
+sta_if.active(True)
+
+def connect_to_wifi():
+    """
+    Attempt to connect to Wi-Fi and debug connection issues using try-except.
+    """
+    if not sta_if.isconnected():
+        print("Attempting to connect to Wi-Fi...")
+        try:
+            sta_if.connect(ssid, password)  # Attempt connection
+            timeout = time.time() + 15  # Timeout after 15 seconds
+            while not sta_if.isconnected():
+                if time.time() > timeout:
+                    print("Wi-Fi connection timeout.")
+                    break
+                print(".", end="")
+                time.sleep(1)
+
+            if sta_if.isconnected():
+                print("\nConnected to Wi-Fi!")
+                print("Network configuration:", sta_if.ifconfig())
+            else:
+                print("\nFailed to connect to Wi-Fi after timeout.")
+        except Exception as e:
+            print(f"\nError during Wi-Fi connection: {e}")
+            print("Retrying in 5 seconds...")
+            time.sleep(5)
+            connect_to_wifi()  # Retry connection
+    else:
+        print("Already connected to Wi-Fi!")
+        print("Network configuration:", sta_if.ifconfig())
+
 url = "https://192.168.1.5:5001/submit"
 
 sta_if = network.WLAN(network.STA_IF)
@@ -63,4 +96,3 @@ while True:
         print("Eroare citire DHT11:", e)
 
     time.sleep(2)
-
