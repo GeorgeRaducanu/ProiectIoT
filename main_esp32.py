@@ -45,24 +45,19 @@ def connect_to_wifi():
         print("Already connected to Wi-Fi!")
         print("Network configuration:", sta_if.ifconfig())
 
-url = "https://192.168.1.5:5001/submit"
-
-sta_if = network.WLAN(network.STA_IF)
-sta_if.active(True)
-sta_if.connect(ssid, password)
-
-while not sta_if.isconnected():
-    time.sleep(1)
+connect_to_wifi()
 
 print("Conectat la retea")
 
+
+url = "https://192.168.17.191:5001/submit"
+
 def send_request(temperature, humidity):
     try:
-        addr_info = socket.getaddrinfo("192.168.1.5", 5001)[0][-1]
+        # Replace with the IP address and port of your HTTP server
+        addr_info = socket.getaddrinfo("192.168.17.191", 5001)[0][-1]
         s = socket.socket()
         s.connect(addr_info)
-
-        ssock = ussl.wrap_socket(s)
 
         # Create JSON payload
         payload = json.dumps({
@@ -70,29 +65,32 @@ def send_request(temperature, humidity):
             "humidity": humidity
         })
 
-        request = f"POST /submit HTTP/1.1\r\nHost: 192.168.1.5\r\nContent-Type: application/json\r\nContent-Length: {len(payload)}\r\n\r\n{payload}"
-        ssock.write(request.encode('utf-8'))
+        # Build HTTP POST request
+        request = (
+            f"POST /submit HTTP/1.1\r\n"
+            f"Host: 192.168.17.191\r\n"
+            f"Content-Type: application/json\r\n"
+            f"Content-Length: {len(payload)}\r\n"
+            f"\r\n"
+            f"{payload}"
+        )
 
-        response = ssock.read(1024)
+        # Send the HTTP request
+        s.send(request.encode('utf-8'))
+
+        # Read the HTTP response
+        response = s.recv(1024)
         print("Server Response:", response.decode('utf-8'))
 
-        ssock.close()
+        s.close()
     except Exception as e:
-        print("Eroare trimitere request:", e)
-
-while True:
-    try:
-        # Masor folosind biblioteca
+        print("Error sending request:", e)
+    while True:
         dht_sensor.measure()
         temperature = dht_sensor.temperature()
         humidity = dht_sensor.humidity()
-
         print("Temperatura: {}°C".format(temperature))
         print("Umiditate: {}%".format(humidity))
-
         send_request(temperature, humidity)
-        #sleep(200)
-    except Exception as e:
-        print("Eroare citire DHT11:", e)
+        time.sleep(5)
 
-    time.sleep(2)
