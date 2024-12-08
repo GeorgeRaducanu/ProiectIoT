@@ -85,12 +85,12 @@ def send_request(temperature, humidity):
         s.close()
     except Exception as e:
         print("Error sending request:", e)
-    while True:
-        dht_sensor.measure()
-        temperature = dht_sensor.temperature()
-        humidity = dht_sensor.humidity()
-        print("Temperatura: {}°C".format(temperature))
-        print("Umiditate: {}%".format(humidity))
-        send_request(temperature, humidity)
-        time.sleep(5)
+while True:
+    dht_sensor.measure()
+    temperature = dht_sensor.temperature()
+    humidity = dht_sensor.humidity()
+    print("Temperatura: {}°C".format(temperature))
+    print("Umiditate: {}%".format(humidity))
+    send_request(temperature, humidity)
+    time.sleep(5)
 
