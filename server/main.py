@@ -96,8 +96,8 @@ if __name__ == '__main__':
     init_db()
 
     # Insert into the database
-    for i in range(20):
-        add_entry_to_db(random.randint(20, 30), random.randint(40, 60))
+    # for i in range(20):
+    #     add_entry_to_db(random.randint(20, 30), random.randint(40, 60))
     # Show all entries in the database
     print(get_entries_from_db())
 

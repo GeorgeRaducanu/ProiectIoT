@@ -5,6 +5,13 @@ import network
 import urequests
 import socket
 import json
+import ssl
+import requests
+
+
+bot_token = '7561752951:AAHvTCV2qX3gRv2CjbAKFQkqLKxZqEsfids'
+chat_id = '5387449451'
+
 DHT_PIN = 32  # Pinul pentru senzor
 
 dht_sensor = dht.DHT11(machine.Pin(DHT_PIN))
@@ -55,7 +62,7 @@ url = "https://192.168.17.191:5001/submit"
 def send_request(temperature, humidity):
     try:
         # Replace with the IP address and port of your HTTP server
-        addr_info = socket.getaddrinfo("192.168.17.191", 5001)[0][-1]
+        addr_info = socket.getaddrinfo("192.168.12.191", 5001)[0][-1]
         s = socket.socket()
         s.connect(addr_info)
 
@@ -85,9 +92,21 @@ def send_request(temperature, humidity):
         s.close()
     except Exception as e:
         print("Error sending request:", e)
+
+def send_telegram_message(message):
+    url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+    payload = {"chat_id": chat_id, "text": message}
+    try:
+        response = requests.post(url, json=payload)
+        response.close()
+        print("Message sent successfully!")
+    except Exception as e:
+        print(f"Error sending message: {e}")
 while True:
     dht_sensor.measure()
     temperature = dht_sensor.temperature()
+    if temperature >= 20.0:
+        send_telegram_message("E mai cald de 20")
     humidity = dht_sensor.humidity()
     print("Temperatura: {}°C".format(temperature))
     print("Umiditate: {}%".format(humidity))
