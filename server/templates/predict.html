@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>George's IoT</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            color: #0056b3;
+            margin-top: 20px;
+        }
+
+        div {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        p {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+
+        span {
+            font-weight: bold;
+        }
+
+        .temp {
+            color: #007bff;
+        }
+
+        .hum {
+            color: #1e90ff;
+        }
+    </style>
+</head>
+<body>
+    <h1>Prezicerea temperaturii și umidității</h1>
+
+    <div>
+        <p>Temperatura minimă: <span id="min_temp" class="temp"></span> °C</p>
+        <p>Temperatura maximă: <span id="max_temp" class="temp"></span> °C</p>
+        <p>Temperatura medie: <span id="avg_temp" class="temp"></span> °C</p>
+        <p>Temperatura prezisă: <span id="predict_temp" class="temp"></span> °C</p>
+        <p>Umiditatea minimă: <span id="min_hum" class="hum"></span> %</p>
+        <p>Umiditatea maximă: <span id="max_hum" class="hum"></span> %</p>
+        <p>Umiditatea medie: <span id="avg_hum" class="hum"></span> %</p>
+        <p>Umiditatea prezisă: <span id="predict_hum" class="hum"></span> %</p>
+    </div>
+
+    <script>
+        fetch('/calculate').then(response => {
+            return response.json();
+        }).then(data => {
+            const min_temp = data.min_temp;
+            const max_temp = data.max_temp;
+            const min_hum = data.min_hum;
+            const max_hum = data.max_hum;
+            const avg_temp = data.avg_temp;
+            const avg_hum = data.avg_hum;
+            const predict_temp = data.predicted_temp;
+            const predict_hum = data.predicted_hum;
+
+            document.getElementById('min_temp').textContent = min_temp;
+            document.getElementById('max_temp').textContent = max_temp;
+            document.getElementById('min_hum').textContent = min_hum;
+            document.getElementById('max_hum').textContent = max_hum;
+            document.getElementById('avg_temp').textContent = avg_temp;
+            document.getElementById('avg_hum').textContent = avg_hum;
+            document.getElementById('predict_temp').textContent = predict_temp;
+            document.getElementById('predict_hum').textContent = predict_hum;
+        });
+    </script>
+</body>
+</html>

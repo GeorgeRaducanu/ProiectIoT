@@ -38,6 +38,11 @@
     <canvas id="myChart" width="400" height="200"></canvas>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <h1>Predictie date!</h1>
+    <ul>
+        <li><a href="{{ url_for('predict') }}">Statistici si predictii</a></li>
+    </ul>
+
     <script>
         // Fetch data from the backend
         fetch('/data')

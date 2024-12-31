@@ -1,6 +1,8 @@
 import random
 from flask import Flask, render_template, request, g, jsonify
 import sqlite3
+import numpy as np
+from statsmodels.tsa.arima.model import ARIMA
 
 app = Flask(__name__)
 DATABASE = 'database.db'
@@ -69,6 +71,48 @@ def turnFanOn():
 def turnFanOff():
     return render_template('turnFanOff.html')
 
+@app.route('/predict')
+def predict():
+    return render_template('predict.html')
+
+@app.route('/calculate')
+def calculate():
+    entries = get_entries_from_db()
+    min_temp = min([entry[2] for entry in entries])
+    min_hum = min([entry[3] for entry in entries])
+    max_temp = max([entry[2] for entry in entries])
+    max_hum = max([entry[3] for entry in entries])
+    avg_temp = sum([entry[2] for entry in entries]) / len(entries)
+    avg_hum = sum([entry[3] for entry in entries]) / len(entries)
+
+    # use arima model to predict the temperature and humidity
+    # use the last 10 entries to predict the next entry
+
+    temps = [entry[2] for entry in entries][-10:]
+    hums = [entry[3] for entry in entries][-10:]
+
+    temp_model = ARIMA(temps, order=(5, 1, 0))
+    temp_model_fit = temp_model.fit()
+    temp_forecast = temp_model_fit.forecast(steps=1)[0]
+    # Round the forecasted value to 2 decimal places
+    temp_forecast = np.round(temp_forecast, 2)
+
+    hum_model = ARIMA(hums, order=(5, 1, 0))
+    hum_model_fit = hum_model.fit()
+    hum_forecast = hum_model_fit.forecast(steps=1)[0]
+    hum_forecast = np.round(hum_forecast, 2)
+
+    return jsonify({
+        'min_temp': min_temp,
+        'min_hum': min_hum,
+        'max_temp': max_temp,
+        'max_hum': max_hum,
+        'avg_temp': avg_temp,
+        'avg_hum': avg_hum,
+        'predicted_temp': temp_forecast,
+        'predicted_hum': hum_forecast
+    })
+
 @app.route('/data')
 def get_data():
     # Get the data from the database
@@ -96,8 +140,8 @@ if __name__ == '__main__':
     init_db()
 
     # Insert into the database
-    # for i in range(20):
-    #     add_entry_to_db(random.randint(20, 30), random.randint(40, 60))
+    for i in range(20):
+        add_entry_to_db(random.randint(20, 25), random.randint(40, 45))
     # Show all entries in the database
     print(get_entries_from_db())
 
