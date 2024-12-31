@@ -56,15 +56,17 @@ connect_to_wifi()
 
 print("Conectat la retea")
 
-
-url = "https://192.168.17.191:5001/submit"
-
-def send_request(temperature, humidity):
+def send_request_seq(temperature, humidity):
     try:
-        # Replace with the IP address and port of your HTTP server
-        addr_info = socket.getaddrinfo("192.168.12.191", 5001)[0][-1]
+        # Load the CA certificate
+        with open("cert.pem", "rb") as f:
+            cert = f.read()
+
+        # Create a socket and wrap it with SSL
+        addr_info = socket.getaddrinfo("192.168.28.191", 5001)[0][-1]
         s = socket.socket()
         s.connect(addr_info)
+        s = ssl.wrap_socket(s)
 
         # Create JSON payload
         payload = json.dumps({
@@ -75,7 +77,7 @@ def send_request(temperature, humidity):
         # Build HTTP POST request
         request = (
             f"POST /submit HTTP/1.1\r\n"
-            f"Host: 192.168.17.191\r\n"
+            f"Host: 192.168.28.191\r\n"
             f"Content-Type: application/json\r\n"
             f"Content-Length: {len(payload)}\r\n"
             f"\r\n"
@@ -83,10 +85,10 @@ def send_request(temperature, humidity):
         )
 
         # Send the HTTP request
-        s.send(request.encode('utf-8'))
+        s.write(request.encode('utf-8'))
 
         # Read the HTTP response
-        response = s.recv(1024)
+        response = s.read(1024)
         print("Server Response:", response.decode('utf-8'))
 
         s.close()
@@ -110,6 +112,5 @@ while True:
     humidity = dht_sensor.humidity()
     print("Temperatura: {}°C".format(temperature))
     print("Umiditate: {}%".format(humidity))
-    send_request(temperature, humidity)
-    time.sleep(5)
-
+    send_request_seq(temperature, humidity)
+    time.sleep(4)
