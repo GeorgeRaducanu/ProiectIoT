@@ -4,9 +4,10 @@ import time
 import network
 import urequests
 import socket
-import json
+import ujson as json
 import ssl
 import requests
+import uasyncio as asyncio
 
 
 bot_token = '7561752951:AAHvTCV2qX3gRv2CjbAKFQkqLKxZqEsfids'
@@ -104,13 +105,69 @@ def send_telegram_message(message):
         print("Message sent successfully!")
     except Exception as e:
         print(f"Error sending message: {e}")
-while True:
-    dht_sensor.measure()
-    temperature = dht_sensor.temperature()
-    if temperature >= 20.0:
-        send_telegram_message("E mai cald de 20")
-    humidity = dht_sensor.humidity()
-    print("Temperatura: {}°C".format(temperature))
-    print("Umiditate: {}%".format(humidity))
-    send_request_seq(temperature, humidity)
-    time.sleep(4)
+
+
+FAN_PIN = 33
+fan = machine.Pin(FAN_PIN, machine.Pin.OUT)
+        
+async def listen_for_fan_status():
+    """
+    Asynchronous function to listen for fan status from the server.
+    """
+    while True:
+        try:
+            addr_info = socket.getaddrinfo("192.168.28.191", 5001)[0][-1]
+            s = socket.socket()
+            s.connect(addr_info)
+            s = ssl.wrap_socket(s)
+
+            # Send a request to get fan status
+            request = (
+                f"GET /fan_status HTTP/1.1\r\n"
+                f"Host: 192.168.28.191\r\n"
+                f"\r\n"
+            )
+            s.write(request.encode('utf-8'))
+
+            # Read the response
+            response = s.read(1024).decode('utf-8')
+            print("Fan Status Response:", response)
+
+            # Parse the response to determine fan state
+            if "on" in response.lower():
+                fan.value(1)  # Turn fan ON
+                print("Fan turned ON")
+            elif "off" in response.lower():
+                fan.value(0)  # Turn fan OFF
+                print("Fan turned OFF")
+
+            s.close()
+        except Exception as e:
+            print("Error listening for fan status:", e)
+
+        await asyncio.sleep(5)  # Check every 5 seconds
+
+async def main_loop():
+    """
+    Main loop to read sensor data and send it to the server.
+    """
+    while True:
+        dht_sensor.measure()
+        temperature = dht_sensor.temperature()
+        humidity = dht_sensor.humidity()
+
+        if temperature >= 20.0:
+            send_telegram_message("E mai cald de 20")
+
+        print("Temperatura: {}°C".format(temperature))
+        print("Umiditate: {}%".format(humidity))
+        send_request_seq(temperature, humidity)
+
+        await asyncio.sleep(4)  # Delay between readings
+
+# Run both the sensor loop and fan status listener concurrently
+async def run():
+    await asyncio.gather(main_loop(), listen_for_fan_status())
+
+# Start the asyncio event loop
+asyncio.run(run())
