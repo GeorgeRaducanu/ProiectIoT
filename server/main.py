@@ -62,7 +62,7 @@ def show_entries():
 fan_status = {'status': 'off'}
 
 @app.route('/fan_status', methods=['GET'])
-def fan_status():
+def fan_info():
     global fan_status
     return jsonify(fan_status)
 
@@ -74,12 +74,14 @@ def dataVisualization():
 def turnFanOn():
     global fan_status
     fan_status['status'] = 'on'
+    #print(fan_status)
     return render_template('turnFanOn.html')
 
 @app.route('/turnFanOff')
 def turnFanOff():
     global fan_status
     fan_status['status'] = 'off'
+    #print(fan_status)
     return render_template('turnFanOff.html')
 
 @app.route('/predict')
