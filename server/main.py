@@ -91,6 +91,8 @@ def predict():
 @app.route('/calculate')
 def calculate():
     entries = get_entries_from_db()
+    if len(entries) < 10:
+        return jsonify({'status': 'Not enough data to predict'})
     min_temp = min([entry[2] for entry in entries])
     min_hum = min([entry[3] for entry in entries])
     max_temp = max([entry[2] for entry in entries])
@@ -104,13 +106,13 @@ def calculate():
     temps = [entry[2] for entry in entries][-10:]
     hums = [entry[3] for entry in entries][-10:]
 
-    temp_model = ARIMA(temps, order=(5, 1, 0))
+    temp_model = ARIMA(temps, order=(1, 0, 0))
     temp_model_fit = temp_model.fit()
     temp_forecast = temp_model_fit.forecast(steps=1)[0]
     # Round the forecasted value to 2 decimal places
-    temp_forecast = np.round(temp_forecast, 2)
+    temp_forecast = np.round(temp_forecast, 1)
 
-    hum_model = ARIMA(hums, order=(5, 1, 0))
+    hum_model = ARIMA(hums, order=(1, 0, 0))
     hum_model_fit = hum_model.fit()
     hum_forecast = hum_model_fit.forecast(steps=1)[0]
     hum_forecast = np.round(hum_forecast, 2)
